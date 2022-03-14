@@ -4,9 +4,9 @@
 #include <stdarg.h>
 
 /* define log output destination */
-#define Log2Printf    LOG
+//#define Log2Printf    LOG
 //#define Log2File      LOG
-//#define Log2Log       LOG  /* stdout and file */
+#define Log2Log       LOG  /* stdout and file */
 
 #define PATH_OF_LOG    "log00.log"
 
@@ -59,12 +59,19 @@ void Log2File(LOG_LEVEL_EN enLogLevel, const char* fmt, ...)
   if(sg_enCurrentLogLevel > enLogLevel)
     return;
 
-  FILE* pFile = fopen(PATH_OF_LOG, "a");
+  FILE* pf= fopen(PATH_OF_LOG, "a");
+  if(pf == NULL)
+  {
+    fprintf(stdout, "open log file failed\n");
+    return;
+  }
 
   va_list va;
   va_start(va, fmt);
-  vfprintf(pFile, fmt, va);
+  vfprintf(pf, fmt, va);
   va_end(va);
+
+  fclose(pf);
 }
 
 /*
@@ -81,11 +88,18 @@ void Log2Log(LOG_LEVEL_EN enLogLevel, const char* fmt, ...)
   if(sg_enCurrentLogLevel > enLogLevel)
     return;
 
-  FILE* pFile = fopen("log00.log", "a");
+  FILE* pf = fopen(PATH_OF_LOG, "a");
+  if(pf == NULL)
+  {
+    fprintf(stdout, "open log file failed\n");
+    return;
+  }
 
-  va_list va;
+  va_list va, vf;
   va_start(va, fmt);
+  va_copy(vf, va);
   vprintf(fmt, va);
-  vfprintf(pFile, fmt, va);
-  va_end(va);
+  vfprintf(pf, fmt, vf);  
+
+  fclose(pf);
 }
