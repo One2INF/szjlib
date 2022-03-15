@@ -1,3 +1,10 @@
+/* 
+ * szjlib/log.c
+ *
+ * Copyright (C) 2022 ZhengJie Shi
+ * www.shizhengjie169.wordpress.com
+ */
+
 #include "log.h"
 
 #include <stdio.h>
