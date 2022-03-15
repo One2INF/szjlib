@@ -11,14 +11,14 @@ enum
 
 void void_f(void)
 {
-  LOG_WARNING_CHECK_RETURN_VOID(TRUE, "return from void_f.");
+  LOG_ASSERT_WARNING_RETURN_VOID(TRUE, "return from void_f.");
 
   fprintf(stdout, "this line shouldn't print.\n");
 }
 
 int int_f(void)
 {
-  LOG_WARNING_CHECK_RETURN_RET(TRUE, -1, "return -1 from int_f.");
+  LOG_ASSERT_WARNING_RETURN_RET(TRUE, -1, "return -1 from int_f.");
   
   fprintf(stdout, "this line shouldn't print.\n");
   return 0;
@@ -39,9 +39,9 @@ int main(void)
   LOG_ERROR("log error!");
 
   fprintf(stdout, "\nlog check fuction.\n");
-  LOG_INFO_CHECK(TRUE, "log info check");
-  LOG_WARNING_CHECK(TRUE, "log warning check");
-  LOG_ERROR_CHECK(TRUE, "log error check");
+  LOG_ASSERT_INFO(TRUE, "log info check");
+  LOG_ASSERT_WARNING(TRUE, "log warning check");
+  LOG_ASSERT_ERROR(TRUE, "log error check");
 
   fprintf(stdout, "\n");
   void_f();
