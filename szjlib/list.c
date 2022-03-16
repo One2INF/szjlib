@@ -15,6 +15,14 @@
 #include "log.h"
 
 
+typedef struct
+{
+  NODE_T *head;
+  NODE_T *tail;
+  size_t element_size;
+  size_t list_size;
+}HEAD_T;
+
 /*
  * @brief  create list.
  * @param  list: point of list.
@@ -24,11 +32,12 @@
  * @author shizj
  * @date   2020.11.15
  */
-bool List_create(LIST_T* list, size_t elementSize)
+bool List_create(LIST *plist, size_t elementSize)
 {
-  if(!list)
+  LIST list = *plist;
+  if(list)
   {
-    LOG_ERROR("list = null? are you C programmer?");
+    LOG_ERROR("list != null, list is not empty, destroy it first.");
     return false;
   }
 
@@ -38,10 +47,13 @@ bool List_create(LIST_T* list, size_t elementSize)
     return false;
   }
 
-  list->head = NULL;
-  list->tail = NULL;
-  list->element_size = elementSize;
-  list->list_size = 0;
+  list = *plist = malloc(sizeof(NODE_T) + sizeof(HEAD_T));
+  list->next = NULL;
+  HEAD_T *head = (HEAD_T*)list->data;
+  head->head = NULL;
+  head->tail = NULL;
+  head->element_size = elementSize;
+  head->list_size = 0;
 
   return true;
 }
@@ -54,15 +66,16 @@ bool List_create(LIST_T* list, size_t elementSize)
  * @author shizj
  * @date   2020.11.15
  */
-bool LIST_destroy(LIST_T* list)
+bool LIST_destroy(LIST *plist)
 {
+  LIST list = *plist;
   if(!list)
   {
     LOG_ERROR("list = null? are you C programmer?");
     return false;
   }
 
-  NODE_T *iterator = list->head;
+  NODE_T *iterator = list;
   NODE_T *temp;
   while(iterator)
   {
@@ -71,10 +84,7 @@ bool LIST_destroy(LIST_T* list)
     iterator = iterator->next;
   }
 
-  list->head = NULL;
-  list->tail = NULL;
-  list->element_size = 0;
-  list->list_size = 0;
+  *plist = NULL;
 
   return true;
 }
@@ -89,7 +99,7 @@ bool LIST_destroy(LIST_T* list)
  * @author shizj
  * @date   2020.11.15
  */
-bool LIST_addItem(LIST_T *list, NODE_T *node, void *data)
+bool LIST_addItem(LIST list, NODE_T *node, void *data)
 {
   if(!list)
   {
@@ -97,11 +107,11 @@ bool LIST_addItem(LIST_T *list, NODE_T *node, void *data)
     return false;
   }
 
-//  if(!node)
-//  {
-//    LOG_ERROR("node = null? are you C programmer?");
-//    return false;
-//  }
+  if(!node)
+  {
+    LOG_ERROR("node = null? are you C programmer?");
+    return false;
+  }
 
   if(!data)
   {
@@ -109,22 +119,18 @@ bool LIST_addItem(LIST_T *list, NODE_T *node, void *data)
     return false;
   }
 
-  NODE_T *item = malloc(sizeof(NODE_T) + list->element_size);
+  HEAD_T *head = (HEAD_T*)list->data;
+  NODE_T *item = malloc(sizeof(NODE_T) + head->element_size);
   if(!item)
   {
     LOG_ERROR("allocate node's memory failed!");
     return false;
   }
 
-  NODE_T **p = &list->head;
-  while (*p)
-  {
-    p = &(*p)->next;
-  }
-
-  memcpy(item->data, data, list->element_size);
-  item->next = NULL;
-  *p = item;  
+  /* insert item */
+  memcpy(item->data, data, head->element_size);
+  item->next = node->next;
+  node->next = item;  
 
   return true;
 }
@@ -138,7 +144,7 @@ bool LIST_addItem(LIST_T *list, NODE_T *node, void *data)
  * @author shizj
  * @date   2020.11.15
  */
-int LIST_travel(LIST_T *list, void(*func)(const NODE_T *node))
+int LIST_travel(LIST list, void(*func)(const NODE_T *node))
 {
   if(!list)
   {
@@ -152,7 +158,7 @@ int LIST_travel(LIST_T *list, void(*func)(const NODE_T *node))
     return false;
   }
 
-  NODE_T *node = list->head;
+  NODE_T *node = list->next;
   while(node)
   {
     func(node);
