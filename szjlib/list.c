@@ -21,7 +21,7 @@ typedef struct
   NODE_T *tail;
   size_t element_size;
   size_t list_size;
-}HEAD_T;
+}LIST_INFO_T;
 
 /*
  * @brief  create list.
@@ -47,13 +47,13 @@ bool List_create(LIST *plist, size_t elementSize)
     return false;
   }
 
-  list = *plist = malloc(sizeof(NODE_T) + sizeof(HEAD_T));
+  list = *plist = malloc(sizeof(NODE_T) + sizeof(LIST_INFO_T));
   list->next = NULL;
-  HEAD_T *head = (HEAD_T*)list->data;
-  head->head = NULL;
-  head->tail = NULL;
-  head->element_size = elementSize;
-  head->list_size = 0;
+  LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
+  list_info->head = NULL;
+  list_info->tail = NULL;
+  list_info->element_size = elementSize;
+  list_info->list_size = 0;
 
   return true;
 }
@@ -119,8 +119,8 @@ bool LIST_addItem(LIST list, NODE_T *node, void *data)
     return false;
   }
 
-  HEAD_T *head = (HEAD_T*)list->data;
-  NODE_T *item = malloc(sizeof(NODE_T) + head->element_size);
+  LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
+  NODE_T *item = malloc(sizeof(NODE_T) + list_info->element_size);
   if(!item)
   {
     LOG_ERROR("allocate node's memory failed!");
@@ -128,7 +128,7 @@ bool LIST_addItem(LIST list, NODE_T *node, void *data)
   }
 
   /* insert item */
-  memcpy(item->data, data, head->element_size);
+  memcpy(item->data, data, list_info->element_size);
   item->next = node->next;
   node->next = item;  
 
