@@ -13,7 +13,7 @@ typedef struct
   char str[STR_SIZE];
 }DATA_T;
 
-void func(const NODE_T *node)
+void print_node(const NODE_T *node)
 {
   DATA_T *data = (DATA_T *)node->data;
   LOG_INFO("%4d %16s", data->a, data->str);
@@ -22,7 +22,7 @@ void func(const NODE_T *node)
 int main(void)
 {
   LIST list = NULL;
-  List_create(&list, sizeof(DATA_T));
+  LIST_create(&list, sizeof(DATA_T));
 
   LIST_addItem(list, list, &(DATA_T){1, "I am 1"});
   LIST_addItem(list, list, &(DATA_T){2, "I am 2"});
@@ -30,7 +30,16 @@ int main(void)
   LIST_addItem(list, list, &(DATA_T){4, "I am 4"});
   LIST_addItem(list, list, &(DATA_T){5, "I am 5"});
 
-  LIST_travel(list, func);
+  LOG_INFO("empty: %d", LIST_empty(list));
+  LOG_INFO("size: %zd", LIST_size(list));
+
+  LOG_INFO("print front node:");
+  print_node(LIST_front(list));
+  LOG_INFO("print back node:");
+  print_node(LIST_back(list));
+
+  LOG_INFO("print list:");
+  LIST_travel(list, print_node);
   LIST_destroy(&list);
 
   return 0;

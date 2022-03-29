@@ -24,6 +24,77 @@ typedef struct
 }LIST_INFO_T;
 
 /*
+ *@group Capacity
+ */
+
+/*
+ * @brief  check whether list is empty.
+ * @param  list: point of list.
+ * @retval 0: not empty;
+ * @retval 1: empty.
+ * @author shizj
+ * @date   2022.03.29
+ */
+bool LIST_empty(LIST list)
+{
+  /* assume not-initialized is empty llist. */
+  LOG_ASSERT_ERROR_RETURN_RET(!list, true, "list = null? are you C programmer");
+
+  return NULL == list->next;
+}
+
+/*
+ * @brief  size of the list.
+ * @param  list: point of list.
+ * @retval size of the list.
+ * @author shizj
+ * @date   2022.03.29
+ */
+size_t LIST_size(LIST list)
+{
+  /* assume not-initialized is empty llist. */
+  LOG_ASSERT_ERROR_RETURN_RET(!list, true, "list = null? are you C programmer");
+
+  return ((LIST_INFO_T*)list->data)->list_size;
+}
+
+/*
+ * @group Element access
+ */
+
+/*
+ * @brief  get point of list's first node.
+ * @param  list: point of list.
+ * @retval point of list's first node.
+ * @author shizj
+ * @date   2022.03.29
+ */
+NODE_T* LIST_front(LIST list)
+{
+  LOG_ASSERT_ERROR_RETURN_RET(!list, NULL, "list = null? are you C programmer");
+
+  return ((LIST_INFO_T*)list->data)->head;
+}
+
+/*
+ * @brief  get node of list's last node.
+ * @param  list: point of list.
+ * @retval point of list's last node.
+ * @author shizj
+ * @date   2022.03.29
+ */
+NODE_T* LIST_back(LIST list)
+{
+  LOG_ASSERT_ERROR_RETURN_RET(!list, NULL, "list = null? are you C programmer");
+
+  return ((LIST_INFO_T*)list->data)->tail;
+}
+
+/*
+ * @group Modifiers
+ */
+
+/*
  * @brief  create list.
  * @param  list: point of list.
  * @param  elementSize: size of list element.
@@ -32,20 +103,13 @@ typedef struct
  * @author shizj
  * @date   2020.11.15
  */
-bool List_create(LIST *plist, size_t elementSize)
+bool LIST_create(LIST *plist, size_t elementSize)
 {
-  LIST list = *plist;
-  if(list)
-  {
-    LOG_ERROR("list != null, list is not empty, destroy it first.");
-    return false;
-  }
+  LOG_ASSERT_ERROR_RETURN_RET(!plist, false, "plist = null? are you C programmer?");
 
-  if(0 == elementSize)
-  {
-    LOG_ERROR("size = 0? are you kidding me???");
-    return false;
-  }
+  LIST list = *plist;
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list != null? destory it first.");
+  LOG_ASSERT_ERROR_RETURN_RET(0 == elementSize, false, "element size = 0? are you kidding me???");
 
   list = *plist = malloc(sizeof(NODE_T) + sizeof(LIST_INFO_T));
   list->next = NULL;
@@ -69,11 +133,7 @@ bool List_create(LIST *plist, size_t elementSize)
 bool LIST_destroy(LIST *plist)
 {
   LIST list = *plist;
-  if(!list)
-  {
-    LOG_ERROR("list = null? are you C programmer?");
-    return false;
-  }
+  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer.");
 
   NODE_T *iterator = list;
   NODE_T *temp;
@@ -101,36 +161,25 @@ bool LIST_destroy(LIST *plist)
  */
 bool LIST_addItem(LIST list, NODE_T *node, void *data)
 {
-  if(!list)
-  {
-    LOG_ERROR("list = null? are you C programmer?");
-    return false;
-  }
-
-  if(!node)
-  {
-    LOG_ERROR("node = null? are you C programmer?");
-    return false;
-  }
-
-  if(!data)
-  {
-    LOG_ERROR("data = null? are you C programmer?");
-    return false;
-  }
+  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer");
+  LOG_ASSERT_ERROR_RETURN_RET(!node, false, "node = null? are you C programmer");
+  LOG_ASSERT_ERROR_RETURN_RET(!data, false, "data = null? are you C programmer");
 
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
   NODE_T *item = malloc(sizeof(NODE_T) + list_info->element_size);
-  if(!item)
-  {
-    LOG_ERROR("allocate node's memory failed!");
-    return false;
-  }
+  LOG_ASSERT_ERROR_RETURN_RET(!item, false, "allocate node's memory failed!");
 
   /* insert item */
   memcpy(item->data, data, list_info->element_size);
   item->next = node->next;
   node->next = item;  
+
+  ++list_info->list_size;
+  list_info->head = list->next;
+  if(!item->next)
+  {
+    list_info->tail = item;
+  }
 
   return true;
 }
@@ -146,17 +195,8 @@ bool LIST_addItem(LIST list, NODE_T *node, void *data)
  */
 int LIST_travel(LIST list, void(*func)(const NODE_T *node))
 {
-  if(!list)
-  {
-    LOG_ERROR("list = null? are you C programmer?");
-    return false;
-  }
-
-  if(!func)
-  {
-    LOG_ERROR("func = null? are you C programmer?");
-    return false;
-  }
+  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer");
+  LOG_ASSERT_ERROR_RETURN_RET(!func, false, "func = null? are you C programmer");
 
   NODE_T *node = list->next;
   while(node)
