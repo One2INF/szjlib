@@ -21,6 +21,8 @@ NODE_T* LIST_back(LIST list);
 NODE_T* LIST_front(LIST list);
 
 /******* Modifiers *******/
+bool LIST_pushFront(LIST list, void *data);
+bool LIST_pushBack(LIST list, void *data);
 bool LIST_create(LIST *plist, size_t elementSize);
 bool LIST_destroy(LIST *plist);
 bool LIST_addItem(LIST list, NODE_T *node, void *data);

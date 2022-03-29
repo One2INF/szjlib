@@ -150,6 +150,70 @@ bool LIST_destroy(LIST *plist)
 }
 
 /*
+ * @brief  add node to list' tail.
+ * @param  list: point of the list.
+ * @param  data: point of the data.
+ * @retval 0: success;
+ * @retval 1: fail.
+ * @author shizj
+ * @date   2022.03.29
+ */
+bool LIST_pushBack(LIST list, void *data)
+{
+  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer");
+  LOG_ASSERT_ERROR_RETURN_RET(!data, false, "data = null? are you C programmer");
+ 
+  LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
+  NODE_T *item = malloc(sizeof(NODE_T) + list_info->element_size);
+  memcpy(item->data, data, list_info->element_size);
+  item->next = NULL;
+
+  if(LIST_empty(list))
+  {
+    list->next = list_info->head = list_info->tail = item;
+    return true;
+  }
+
+  list_info->tail->next = item;
+  list_info->tail = item;
+  ++list_info->list_size;
+
+  return true;
+}
+
+/*
+ * @brief  add node to list' head.
+ * @param  list: point of the list.
+ * @param  data: point of the data.
+ * @retval 0: success;
+ * @retval 1: fail.
+ * @author shizj
+ * @date   2022.03.29
+ */
+bool LIST_pushFront(LIST list, void *data)
+{
+  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer");
+  LOG_ASSERT_ERROR_RETURN_RET(!data, false, "data = null? are you C programmer");
+ 
+  LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
+  NODE_T *item = malloc(sizeof(NODE_T) + list_info->element_size);
+  memcpy(item->data, data, list_info->element_size);
+  item->next = list_info->head;
+  
+  list->next = item;
+  if(LIST_empty(list))
+  {
+    list_info->head = list_info->tail = item;
+    return true;
+  }
+
+  list_info->head = item;
+  ++list_info->list_size;
+
+  return true;
+}
+
+/*
  * @brief  add a item to list.
  * @param  list: point of the list.
  * @param  node: item will be added behind the node.
@@ -174,12 +238,12 @@ bool LIST_addItem(LIST list, NODE_T *node, void *data)
   item->next = node->next;
   node->next = item;  
 
-  ++list_info->list_size;
   list_info->head = list->next;
   if(!item->next)
   {
     list_info->tail = item;
   }
+  ++list_info->list_size;
 
   return true;
 }

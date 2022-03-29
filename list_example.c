@@ -40,6 +40,12 @@ int main(void)
 
   LOG_INFO("print list:");
   LIST_travel(list, print_node);
+
+  LIST_pushFront(list, &(DATA_T){6, "push front"});
+  LIST_pushBack(list, &(DATA_T){7, "push back"});
+  LOG_INFO("print list:");
+  LIST_travel(list, print_node);
+
   LIST_destroy(&list);
 
   return 0;
