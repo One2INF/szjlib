@@ -17,7 +17,7 @@
 
 typedef struct
 {
-  NODE_T *head;
+  /* head = list->next */
   NODE_T *tail;
   size_t element_size;
   size_t list_size;
@@ -40,7 +40,7 @@ bool LIST_empty(LIST list)
   /* assume not-initialized is empty llist. */
   LOG_ASSERT_ERROR_RETURN_RET(!list, true, "list = null? are you C programmer?");
 
-  return NULL == list->next;
+  return 0 == ((LIST_INFO_T*)list->data)->list_size;
 }
 
 /*
@@ -73,7 +73,7 @@ NODE_T* LIST_front(LIST list)
 {
   LOG_ASSERT_ERROR_RETURN_RET(!list, NULL, "list = null? are you C programmer?");
 
-  return ((LIST_INFO_T*)list->data)->head;
+  return list->next;
 }
 
 /*
@@ -86,6 +86,7 @@ NODE_T* LIST_front(LIST list)
 NODE_T* LIST_back(LIST list)
 {
   LOG_ASSERT_ERROR_RETURN_RET(!list, NULL, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(!((LIST_INFO_T*)list->data)->list_size, NULL, "empty list, no back element.");
 
   return ((LIST_INFO_T*)list->data)->tail;
 }
@@ -114,8 +115,8 @@ bool LIST_create(LIST *plist, size_t elementSize)
   list = *plist = malloc(sizeof(NODE_T) + sizeof(LIST_INFO_T));
   list->next = NULL;
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
-  list_info->head = NULL;
-  list_info->tail = NULL;
+  /* tail = list for convince */
+  list_info->tail = list;
   list_info->element_size = elementSize;
   list_info->list_size = 0;
 
@@ -137,46 +138,13 @@ bool LIST_destroy(LIST *plist)
 
   NODE_T *iterator = list;
   NODE_T *temp;
-  while(iterator)
+  do
   {
     temp = iterator;
     free(temp);
-    iterator = iterator->next;
-  }
+  }while((iterator = iterator->next));
 
   *plist = NULL;
-
-  return true;
-}
-
-/*
- * @brief  add node to list's tail.
- * @param  list: point of the list.
- * @param  data: point of the data.
- * @retval 0: success;
- * @retval 1: fail.
- * @author shizj
- * @date   2022.03.29
- */
-bool LIST_pushBack(LIST list, void *data)
-{
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!data, false, "data = null? are you C programmer?");
- 
-  LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
-  NODE_T *item = malloc(sizeof(NODE_T) + list_info->element_size);
-  memcpy(item->data, data, list_info->element_size);
-  item->next = NULL;
-
-  if(LIST_empty(list))
-  {
-    list->next = list_info->head = list_info->tail = item;
-    return true;
-  }
-
-  list_info->tail->next = item;
-  list_info->tail = item;
-  ++list_info->list_size;
 
   return true;
 }
@@ -197,17 +165,50 @@ bool LIST_pushFront(LIST list, void *data)
  
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
   NODE_T *item = malloc(sizeof(NODE_T) + list_info->element_size);
+  LOG_ASSERT_ERROR_RETURN_RET(!item, false, "allocate node's memory failed!");
   memcpy(item->data, data, list_info->element_size);
-  item->next = list_info->head;
-  
+  item->next = list->next;
+
+  /* update head and tail */
   list->next = item;
-  if(LIST_empty(list))
+  if(!list_info->list_size)
   {
-    list_info->head = list_info->tail = item;
-    return true;
+    list_info->tail = item;
   }
 
-  list_info->head = item;
+  ++list_info->list_size;
+
+  return true;
+}
+
+/*
+ * @brief  add node to list's tail.
+ * @param  list: point of the list.
+ * @param  data: point of the data.
+ * @retval 0: success;
+ * @retval 1: fail.
+ * @author shizj
+ * @date   2022.03.29
+ */
+bool LIST_pushBack(LIST list, void *data)
+{
+  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(!data, false, "data = null? are you C programmer?");
+ 
+  LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
+  NODE_T *item = malloc(sizeof(NODE_T) + list_info->element_size);
+  LOG_ASSERT_ERROR_RETURN_RET(!item, false, "allocate node's memory failed!");
+  memcpy(item->data, data, list_info->element_size);
+  item->next = NULL;
+
+  list_info->tail->next = item;
+  /* update head and tail */
+  if(!list_info->list_size)
+  {
+    list->next = item;
+  }
+  list_info->tail = item;
+
   ++list_info->list_size;
 
   return true;
@@ -238,11 +239,12 @@ bool LIST_addItem(LIST list, NODE_T *node, void *data)
   item->next = node->next;
   node->next = item;  
 
-  list_info->head = list->next;
-  if(!item->next)
+  /* only need update tail, head has been updated when spliced list */
+  if(!list_info->list_size)
   {
     list_info->tail = item;
   }
+
   ++list_info->list_size;
 
   return true;
@@ -262,21 +264,17 @@ bool LIST_popFront(LIST list)
   LOG_ASSERT_ERROR_RETURN_RET(!list->next, false, "can't pop empty list.");
 
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
-  NODE_T *head = list_info->head;
-  free(head->data);
-  free(head);
+  NODE_T *head = list->next;
   --list_info->list_size;
 
   /* update head and tail */
-  list->next = list_info->head->next;
-  if(list_info->list_size)
+  list->next = list->next->next;
+  if(!list_info->list_size)
   {
-    list_info->head = list_info->head->next;
+    list_info->tail = list;
   }
-  else
-  {
-    list_info->head = list_info->tail = NULL;
-  }
+
+  free(head);
 
   return true;   
 }
@@ -295,17 +293,14 @@ bool LIST_popBack(LIST list)
   LOG_ASSERT_ERROR_RETURN_RET(!list->next, false, "can't pop empty list.");
 
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
-
   NODE_T *tail = list_info->tail;
-  free(tail->data);
-  free(tail);
   --list_info->list_size;
 
   /* update head and tail */
   if(list_info->list_size)
   {
     NODE_T *parent_of_tail = list;
-    while(parent_of_tail->next != list_info->tail)
+    while(!parent_of_tail && parent_of_tail->next != list_info->tail)
     {
       parent_of_tail = parent_of_tail->next;
     }
@@ -315,8 +310,10 @@ bool LIST_popBack(LIST list)
   else
   {
     list->next = NULL;
-    list_info->head = list_info->tail = NULL;
+    list_info->tail = list;
   }
+
+  free(tail);
 
   return true;   
 }
@@ -342,31 +339,20 @@ bool LIST_erase(LIST list, NODE_T *node)
     if(parent_node->next == node)
       break;
   }
-  LOG_ASSERT_ERROR_RETURN_RET(parent_node != node, false, "node isn't belong to list?");
+  LOG_ASSERT_ERROR_RETURN_RET(parent_node->next != node, false, "node isn't belong to list?");
 
-  free(node->data);
-  free(node);
   parent_node->next = node->next;
-
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
   --list_info->list_size;
 
-  /* update head and tail */
-  if(list_info->list_size)
+  /* only need update tail, head has been updated when spliced list */
+  if(list_info->tail == node)
   {
-    if(list_info->head == node)
-    {
-      list_info->head = list->next;
-    }
-    else if(list_info->tail == node)
-    {
-      list_info->tail = parent_node;
-    }
+    list_info->tail = parent_node;
+    list_info->tail->next = NULL;
   }
-  else
-  {
-    list_info->head = list_info->tail = NULL;
-  }
+
+  free(node);
 
   return true;
 }
@@ -380,7 +366,7 @@ bool LIST_erase(LIST list, NODE_T *node)
  * @author shizj
  * @date   2020.11.15
  */
-int LIST_travel(LIST list, void(*func)(const NODE_T *node))
+bool LIST_travel(LIST list, void(*func)(const NODE_T *node))
 {
   LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer");
   LOG_ASSERT_ERROR_RETURN_RET(!func, false, "func = null? are you C programmer");
@@ -392,32 +378,35 @@ int LIST_travel(LIST list, void(*func)(const NODE_T *node))
     node = node->next;
   }
 
-  return 0;
+  return true;
 }
 
-/**
-  * @brief  pop element
-  * @param  pstQueue: queue control block
-  * @retval 0: success
-  * @retval 1: fail
-  * @author shizj
-  * @date   2020.11.15
-  */
-//int QueuePop(SQ_QUEUE_T* pstQueue)
-//{
-//  if(pstQueue->elementnum == 0)
-//  {
-//    SZJ_PRINTF("Pop WARRING: queue is empty!");
-//    return -1;
-//  }
-//  /* user must self-guarantee validity of element type */
-//  --pstQueue->elementnum;
-//
-//  pstQueue->front = (char*)pstQueue->front + pstQueue->elementsize;
-//  if(pstQueue->front >= pstQueue->end)
-//  {
-//    pstQueue->front = pstQueue->base;
-//  }
-//
-//  return 0;
-//}
+/*
+ * @brief  clear the list.
+ * @param  list: point of the list.
+ * @retval 0: success
+ * @retval 1: fail
+ * @author shizj
+ * @date   2020.11.15
+ */
+bool LIST_clear(LIST list)
+{
+  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
+
+  NODE_T *iterator = list->next;
+  NODE_T *temp;
+  while(iterator)
+  {
+    temp = iterator;
+    free(temp);
+    iterator = iterator->next;
+  };
+
+  list->next = NULL;
+  LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
+  /* tail = list for convince */
+  list_info->tail = list;
+  list_info->list_size = 0;
+
+  return true;
+}
