@@ -46,6 +46,14 @@ int main(void)
   LOG_INFO("print list:");
   LIST_travel(list, print_node);
 
+  LIST_popFront(list);
+  LOG_INFO("print list after pop front:");
+  LIST_travel(list, print_node);
+
+  LIST_popBack(list);
+  LOG_INFO("print list after pop back:");
+  LIST_travel(list, print_node);
+
   LIST_destroy(&list);
 
   return 0;

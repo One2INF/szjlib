@@ -23,13 +23,15 @@ NODE_T* LIST_front(LIST list);
 /******* Modifiers *******/
 bool LIST_pushFront(LIST list, void *data);
 bool LIST_pushBack(LIST list, void *data);
-bool LIST_create(LIST *plist, size_t elementSize);
-bool LIST_destroy(LIST *plist);
 bool LIST_addItem(LIST list, NODE_T *node, void *data);
 bool LIST_popFront(LIST list);
 bool LIST_popBack(LIST list);
 bool LIST_erase(LIST list, NODE_T *node);
-bool LIST_travel(LIST list, void(*func)(const NODE_T *node));
+
+/******* Opertaions *******/
+bool LIST_create(LIST *plist, size_t elementSize);
+bool LIST_destroy(LIST *plist);
+bool LIST_travel(LIST list, void(*func)(const NODE_T*));
 bool LIST_clear(LIST list);
 
 #endif

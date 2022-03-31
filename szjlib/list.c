@@ -96,60 +96,6 @@ NODE_T* LIST_back(LIST list)
  */
 
 /*
- * @brief  create list.
- * @param  list: point of list.
- * @param  elementSize: size of list element.
- * @retval 0: success;
- * @retval 1: fail.
- * @author shizj
- * @date   2020.11.15
- */
-bool LIST_create(LIST *plist, size_t elementSize)
-{
-  LOG_ASSERT_ERROR_RETURN_RET(!plist, false, "plist = null? are you C programmer?");
-
-  LIST list = *plist;
-  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list != null? destory it first.");
-  LOG_ASSERT_ERROR_RETURN_RET(0 == elementSize, false, "element size = 0? are you kidding me???");
-
-  list = *plist = malloc(sizeof(NODE_T) + sizeof(LIST_INFO_T));
-  list->next = NULL;
-  LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
-  /* tail = list for convince */
-  list_info->tail = list;
-  list_info->element_size = elementSize;
-  list_info->list_size = 0;
-
-  return true;
-}
-
-/*
- * @brief  destroy list.
- * @param  list: point of list.
- * @retval 0: success;
- * @retval 1: fail.
- * @author shizj
- * @date   2020.11.15
- */
-bool LIST_destroy(LIST *plist)
-{
-  LIST list = *plist;
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
-
-  NODE_T *iterator = list;
-  NODE_T *temp;
-  do
-  {
-    temp = iterator;
-    free(temp);
-  }while((iterator = iterator->next));
-
-  *plist = NULL;
-
-  return true;
-}
-
-/*
  * @brief  add node to list's head.
  * @param  list: point of the list.
  * @param  data: point of the data.
@@ -300,7 +246,7 @@ bool LIST_popBack(LIST list)
   if(list_info->list_size)
   {
     NODE_T *parent_of_tail = list;
-    while(!parent_of_tail && parent_of_tail->next != list_info->tail)
+    while(parent_of_tail && parent_of_tail->next != list_info->tail)
     {
       parent_of_tail = parent_of_tail->next;
     }
@@ -358,6 +304,64 @@ bool LIST_erase(LIST list, NODE_T *node)
 }
 
 /*
+ * @group Operations
+ */
+
+/*
+ * @brief  create list.
+ * @param  list: point of list.
+ * @param  elementSize: size of list element.
+ * @retval 0: success;
+ * @retval 1: fail.
+ * @author shizj
+ * @date   2020.11.15
+ */
+bool LIST_create(LIST *plist, size_t elementSize)
+{
+  LOG_ASSERT_ERROR_RETURN_RET(!plist, false, "plist = null? are you C programmer?");
+
+  LIST list = *plist;
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list != null? destory it first.");
+  LOG_ASSERT_ERROR_RETURN_RET(0 == elementSize, false, "element size = 0? are you kidding me???");
+
+  list = *plist = malloc(sizeof(NODE_T) + sizeof(LIST_INFO_T));
+  list->next = NULL;
+  LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
+  /* tail = list for convince */
+  list_info->tail = list;
+  list_info->element_size = elementSize;
+  list_info->list_size = 0;
+
+  return true;
+}
+
+/*
+ * @brief  destroy list.
+ * @param  list: point of list.
+ * @retval 0: success;
+ * @retval 1: fail.
+ * @author shizj
+ * @date   2020.11.15
+ */
+bool LIST_destroy(LIST *plist)
+{
+  LIST list = *plist;
+  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
+
+  NODE_T *iterator = list;
+  NODE_T *temp;
+  do
+  {
+    temp = iterator;
+    free(temp);
+  }while((iterator = iterator->next));
+
+  *plist = NULL;
+
+  return true;
+}
+
+/*
  * @brief  travel the list and run function.
  * @param  list: point of the list.
  * @param  func: function point.
@@ -366,23 +370,23 @@ bool LIST_erase(LIST list, NODE_T *node)
  * @author shizj
  * @date   2020.11.15
  */
-bool LIST_travel(LIST list, void(*func)(const NODE_T *node))
+bool LIST_travel(LIST list, void(*func)(const NODE_T*))
 {
   LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer");
   LOG_ASSERT_ERROR_RETURN_RET(!func, false, "func = null? are you C programmer");
 
-  NODE_T *node = list->next;
-  while(node)
+  NODE_T *iterator = list->next;
+  while(iterator)
   {
-    func(node);
-    node = node->next;
+    func(iterator);
+    iterator = iterator->next;
   }
 
   return true;
 }
 
 /*
- * @brief  clear the list.
+ * @brief  clear the list's elements.
  * @param  list: point of the list.
  * @retval 0: success
  * @retval 1: fail
