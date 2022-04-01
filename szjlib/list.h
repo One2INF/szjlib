@@ -5,12 +5,8 @@
 #include <stdbool.h>
 
 
-typedef struct node
-{
-  struct node *next;
-  char data[];
-}NODE_T, *LIST;
-
+typedef struct node NODE_T;
+typedef struct node* LIST;
 
 /******* Capacity *******/
 bool LIST_empty(LIST list);
@@ -31,7 +27,7 @@ bool LIST_erase(LIST list, NODE_T *node);
 /******* Opertaions *******/
 bool LIST_create(LIST *plist, size_t elementSize);
 bool LIST_destroy(LIST *plist);
-bool LIST_travel(LIST list, void(*func)(const NODE_T*));
+bool LIST_traverse(LIST list, void(*func)(void*));
 bool LIST_clear(LIST list);
 
 #endif

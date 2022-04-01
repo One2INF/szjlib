@@ -15,6 +15,12 @@
 #include "log.h"
 
 
+struct node
+{
+  struct node *next;
+  char data[];
+};
+
 typedef struct
 {
   /* head = list->next */
@@ -370,7 +376,7 @@ bool LIST_destroy(LIST *plist)
  * @author shizj
  * @date   2020.11.15
  */
-bool LIST_travel(LIST list, void(*func)(const NODE_T*))
+bool LIST_traverse(LIST list, void(*func)(void*))
 {
   LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer");
   LOG_ASSERT_ERROR_RETURN_RET(!func, false, "func = null? are you C programmer");
@@ -378,7 +384,7 @@ bool LIST_travel(LIST list, void(*func)(const NODE_T*))
   NODE_T *iterator = list->next;
   while(iterator)
   {
-    func(iterator);
+    func(iterator->data);
     iterator = iterator->next;
   }
 

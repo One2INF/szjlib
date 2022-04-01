@@ -13,10 +13,9 @@ typedef struct
   char str[STR_SIZE];
 }DATA_T;
 
-void print_node(const NODE_T *node)
+void print_node(void *data)
 {
-  DATA_T *data = (DATA_T *)node->data;
-  LOG_INFO("%4d %16s", data->a, data->str);
+  LOG_INFO("%4d %16s", ((DATA_T*)data)->a, ((DATA_T*)data)->str);
 }
 
 int main(void)
@@ -39,20 +38,20 @@ int main(void)
   print_node(LIST_back(list));
 
   LOG_INFO("print list:");
-  LIST_travel(list, print_node);
+  LIST_traverse(list, print_node);
 
   LIST_pushFront(list, &(DATA_T){6, "push front"});
   LIST_pushBack(list, &(DATA_T){7, "push back"});
   LOG_INFO("print list:");
-  LIST_travel(list, print_node);
+  LIST_traverse(list, print_node);
 
   LIST_popFront(list);
   LOG_INFO("print list after pop front:");
-  LIST_travel(list, print_node);
+  LIST_traverse(list, print_node);
 
   LIST_popBack(list);
   LOG_INFO("print list after pop back:");
-  LIST_travel(list, print_node);
+  LIST_traverse(list, print_node);
 
   LIST_destroy(&list);
 
