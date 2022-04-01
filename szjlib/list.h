@@ -17,8 +17,8 @@ bool LIST_empty(LIST list);
 size_t LIST_size(LIST list);
 
 /******* Element access *******/
-NODE_T* LIST_back(LIST list);
 NODE_T* LIST_front(LIST list);
+NODE_T* LIST_back(LIST list);
 
 /******* Modifiers *******/
 bool LIST_pushFront(LIST list, void *data);
