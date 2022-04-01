@@ -1,6 +1,6 @@
-/* 
+/*
  * szjlib/list.c
- * 
+ *
  * Copyright (C) 2022 ZhengJie Shi
  * www.shizhengjie169.wordpress.com
  */
@@ -75,11 +75,11 @@ size_t LIST_size(LIST list)
  * @author shizj
  * @date   2022.03.29
  */
-NODE_T* LIST_front(LIST list)
+void* LIST_front(LIST list)
 {
   LOG_ASSERT_ERROR_RETURN_RET(!list, NULL, "list = null? are you C programmer?");
 
-  return list->next;
+  return list->next->data;
 }
 
 /*
@@ -89,12 +89,12 @@ NODE_T* LIST_front(LIST list)
  * @author shizj
  * @date   2022.03.29
  */
-NODE_T* LIST_back(LIST list)
+void* LIST_back(LIST list)
 {
   LOG_ASSERT_ERROR_RETURN_RET(!list, NULL, "list = null? are you C programmer?");
   LOG_ASSERT_ERROR_RETURN_RET(!((LIST_INFO_T*)list->data)->list_size, NULL, "empty list, no back element.");
 
-  return ((LIST_INFO_T*)list->data)->tail;
+  return ((LIST_INFO_T*)list->data)->tail->data;
 }
 
 /*
@@ -330,13 +330,17 @@ bool LIST_create(LIST *plist, size_t elementSize)
   LOG_ASSERT_ERROR_RETURN_RET(list, false, "list != null? destory it first.");
   LOG_ASSERT_ERROR_RETURN_RET(0 == elementSize, false, "element size = 0? are you kidding me???");
 
-  list = *plist = malloc(sizeof(NODE_T) + sizeof(LIST_INFO_T));
+  list = malloc(sizeof(NODE_T) + sizeof(LIST_INFO_T));
+  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "allocate queue's memory failed!");
+
   list->next = NULL;
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
   /* tail = list for convince */
   list_info->tail = list;
   list_info->element_size = elementSize;
   list_info->list_size = 0;
+
+  *plist = list;
 
   return true;
 }
