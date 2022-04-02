@@ -45,6 +45,9 @@
 # Log files
 *.log
 
+# config files
+*.json
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
