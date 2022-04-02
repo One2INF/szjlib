@@ -10,7 +10,6 @@
 void UTILS_funfunc(void);
 int UTILS_wordLength(void);
 bool UTILS_isBigEndian(void);
-bool UTILS_isBigEndian(void);
 
 #endif
 
