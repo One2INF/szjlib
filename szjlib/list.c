@@ -44,7 +44,7 @@ typedef struct
 bool LIST_empty(LIST list)
 {
   /* assume not-initialized is empty llist. */
-  LOG_ASSERT_ERROR_RETURN_RET(!list, true, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list, true, "list = null? are you C programmer?");
 
   return 0 == ((LIST_INFO_T*)list->data)->list_size;
 }
@@ -59,7 +59,7 @@ bool LIST_empty(LIST list)
 size_t LIST_size(LIST list)
 {
   /* assume not-initialized is empty llist. */
-  LOG_ASSERT_ERROR_RETURN_RET(!list, true, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list, true, "list = null? are you C programmer?");
 
   return ((LIST_INFO_T*)list->data)->list_size;
 }
@@ -77,7 +77,7 @@ size_t LIST_size(LIST list)
  */
 void* LIST_front(LIST list)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!list, NULL, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list, NULL, "list = null? are you C programmer?");
 
   return list->next->data;
 }
@@ -91,8 +91,8 @@ void* LIST_front(LIST list)
  */
 void* LIST_back(LIST list)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!list, NULL, "list = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!((LIST_INFO_T*)list->data)->list_size, NULL, "empty list, no back element.");
+  LOG_ASSERT_ERROR_RETURN_RET(list, NULL, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(((LIST_INFO_T*)list->data)->list_size, NULL, "empty list, no back element.");
 
   return ((LIST_INFO_T*)list->data)->tail->data;
 }
@@ -112,12 +112,12 @@ void* LIST_back(LIST list)
  */
 bool LIST_pushFront(LIST list, void *data)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!data, false, "data = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(data, false, "data = null? are you C programmer?");
  
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
   NODE_T *item = malloc(sizeof(NODE_T) + list_info->element_size);
-  LOG_ASSERT_ERROR_RETURN_RET(!item, false, "allocate node's memory failed!");
+  LOG_ASSERT_ERROR_RETURN_RET(item, false, "allocate node's memory failed!");
   memcpy(item->data, data, list_info->element_size);
   item->next = list->next;
 
@@ -144,12 +144,12 @@ bool LIST_pushFront(LIST list, void *data)
  */
 bool LIST_pushBack(LIST list, void *data)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!data, false, "data = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(data, false, "data = null? are you C programmer?");
  
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
   NODE_T *item = malloc(sizeof(NODE_T) + list_info->element_size);
-  LOG_ASSERT_ERROR_RETURN_RET(!item, false, "allocate node's memory failed!");
+  LOG_ASSERT_ERROR_RETURN_RET(item, false, "allocate node's memory failed!");
   memcpy(item->data, data, list_info->element_size);
   item->next = NULL;
 
@@ -178,13 +178,13 @@ bool LIST_pushBack(LIST list, void *data)
  */
 bool LIST_addItem(LIST list, NODE_T *node, void *data)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!node, false, "node = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!data, false, "data = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(node, false, "node = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(data, false, "data = null? are you C programmer?");
 
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
   NODE_T *item = malloc(sizeof(NODE_T) + list_info->element_size);
-  LOG_ASSERT_ERROR_RETURN_RET(!item, false, "allocate node's memory failed!");
+  LOG_ASSERT_ERROR_RETURN_RET(item, false, "allocate node's memory failed!");
 
   /* insert item */
   memcpy(item->data, data, list_info->element_size);
@@ -212,8 +212,8 @@ bool LIST_addItem(LIST list, NODE_T *node, void *data)
  */
 bool LIST_popFront(LIST list)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!list->next, false, "can't pop empty list.");
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list->next, false, "can't pop empty list.");
 
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
   NODE_T *head = list->next;
@@ -241,8 +241,8 @@ bool LIST_popFront(LIST list)
  */
 bool LIST_popBack(LIST list)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!list->next, false, "can't pop empty list.");
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list->next, false, "can't pop empty list.");
 
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
   NODE_T *tail = list_info->tail;
@@ -281,9 +281,9 @@ bool LIST_popBack(LIST list)
  */
 bool LIST_erase(LIST list, NODE_T *node)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!list->next, false, "can't pop empty list.");
-  LOG_ASSERT_ERROR_RETURN_RET(!node, false, "node = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list->next, false, "can't pop empty list.");
+  LOG_ASSERT_ERROR_RETURN_RET(node, false, "node = null? are you C programmer?");
 
   NODE_T *parent_node;
   for(parent_node = list; parent_node->next != NULL; parent_node = parent_node->next)
@@ -291,7 +291,7 @@ bool LIST_erase(LIST list, NODE_T *node)
     if(parent_node->next == node)
       break;
   }
-  LOG_ASSERT_ERROR_RETURN_RET(parent_node->next != node, false, "node isn't belong to list?");
+  LOG_ASSERT_ERROR_RETURN_RET(parent_node->next == node, false, "node isn't belong to list?");
 
   parent_node->next = node->next;
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
@@ -324,14 +324,14 @@ bool LIST_erase(LIST list, NODE_T *node)
  */
 bool LIST_create(LIST *plist, size_t elementSize)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!plist, false, "plist = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(plist, false, "plist = null? are you C programmer?");
 
   LIST list = *plist;
-  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list != null? destory it first.");
-  LOG_ASSERT_ERROR_RETURN_RET(0 == elementSize, false, "element size = 0? are you kidding me???");
+  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list != null? destory it first.");
+  LOG_ASSERT_ERROR_RETURN_RET(elementSize, false, "element size = 0? are you kidding me???");
 
   list = malloc(sizeof(NODE_T) + sizeof(LIST_INFO_T));
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "allocate queue's memory failed!");
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "allocate queue's memory failed!");
 
   list->next = NULL;
   LIST_INFO_T *list_info = (LIST_INFO_T*)list->data;
@@ -356,7 +356,7 @@ bool LIST_create(LIST *plist, size_t elementSize)
 bool LIST_destroy(LIST *plist)
 {
   LIST list = *plist;
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list = null? are you C programmer?");
 
   NODE_T *iterator = list;
   NODE_T *temp;
@@ -382,8 +382,8 @@ bool LIST_destroy(LIST *plist)
  */
 bool LIST_traverse(LIST list, void(*func)(void*))
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer");
-  LOG_ASSERT_ERROR_RETURN_RET(!func, false, "func = null? are you C programmer");
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list = null? are you C programmer");
+  LOG_ASSERT_ERROR_RETURN_RET(func, false, "func = null? are you C programmer");
 
   NODE_T *iterator = list->next;
   while(iterator)
@@ -405,7 +405,7 @@ bool LIST_traverse(LIST list, void(*func)(void*))
  */
 bool LIST_clear(LIST list)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!list, false, "list = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(list, false, "list = null? are you C programmer?");
 
   NODE_T *iterator = list->next;
   NODE_T *temp;

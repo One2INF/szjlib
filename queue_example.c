@@ -16,7 +16,7 @@ typedef struct
 
 void print_item(void *data)
 {
-  LOG_ASSERT_ERROR_RETURN_VOID(!data, "item = null.");
+  LOG_ASSERT_ERROR_RETURN_VOID(data, "item = null.");
   LOG_INFO("%4d %16s", ((DATA_T*)data)->a, ((DATA_T*)data)->str);
 }
 

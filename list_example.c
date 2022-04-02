@@ -15,6 +15,7 @@ typedef struct
 
 void print_node(void *data)
 {
+  LOG_ASSERT_ERROR_RETURN_VOID(data, "node = null.");
   LOG_INFO("%4d %16s", ((DATA_T*)data)->a, ((DATA_T*)data)->str);
 }
 

@@ -41,7 +41,7 @@ struct queue
 bool QUEUE_empty(QUEUE queue)
 {
   /* assume not-initialized is empty lqueue. */
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, true, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, true, "queue = null? are you C programmer?");
 
   return 0 == queue->size;
 }
@@ -57,7 +57,7 @@ bool QUEUE_empty(QUEUE queue)
 bool QUEUE_full(QUEUE queue)
 {
   /* assume not-initialized is empty lqueue. */
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, true, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, true, "queue = null? are you C programmer?");
 
   return queue->size == queue->max_size;
 }
@@ -72,7 +72,7 @@ bool QUEUE_full(QUEUE queue)
 size_t QUEUE_size(QUEUE queue)
 {
   /* assume not-initialized is empty lqueue. */
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, true, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, true, "queue = null? are you C programmer?");
 
   return queue->size;
 }
@@ -90,7 +90,7 @@ size_t QUEUE_size(QUEUE queue)
  */
 void* QUEUE_front(QUEUE queue)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, NULL, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, NULL, "queue = null? are you C programmer?");
 
   return queue->head;
 }
@@ -104,15 +104,15 @@ void* QUEUE_front(QUEUE queue)
  */
 void* QUEUE_back(QUEUE queue)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, NULL, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, NULL, "queue = null? are you C programmer?");
 
   return queue->tail;
 }
 
 void* QUEUE_at(QUEUE queue, size_t pos)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, NULL, "queue = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(pos >= queue->size, NULL, "pos out of queue size.");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, NULL, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(pos < queue->size, NULL, "pos out of queue size.");
 
   void *item;
   if((char*)queue->head + pos * queue->element_size > queue->buff + queue->element_size * (queue->max_size - 1))
@@ -142,9 +142,9 @@ void* QUEUE_at(QUEUE queue, size_t pos)
  */
 bool QUEUE_pushFront(QUEUE queue, void *data)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, false, "queue = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!data, false, "data = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(queue->size == queue->max_size, false, "full queue, can't push element.");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, false, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(data, false, "data = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue->size < queue->max_size, false, "full queue, can't push element.");
 
   /* update head */
   if(queue->size)
@@ -176,9 +176,9 @@ bool QUEUE_pushFront(QUEUE queue, void *data)
  */
 bool QUEUE_pushBack(QUEUE queue, void *data)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, false, "queue = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!data, false, "data = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(queue->size == queue->max_size, false, "full queue, can't push element.");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, false, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(data, false, "data = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue->size < queue->max_size, false, "full queue, can't push element.");
  
   /* update tail */
   if(queue->size)
@@ -209,8 +209,8 @@ bool QUEUE_pushBack(QUEUE queue, void *data)
  */
 bool QUEUE_popFront(QUEUE queue)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, false, "queue = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!queue->size, false, "can't pop empty queue.");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, false, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue->size, false, "can't pop empty queue.");
 
   /* update head */
   if(queue->head == queue->buff + queue->element_size * (queue->max_size - 1))
@@ -237,8 +237,8 @@ bool QUEUE_popFront(QUEUE queue)
  */
 bool QUEUE_popBack(QUEUE queue)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, false, "queue = null? are you C programmer?");
-  LOG_ASSERT_ERROR_RETURN_RET(!queue->size, false, "can't pop empty queue.");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, false, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue->size, false, "can't pop empty queue.");
 
   /* update tail */
   if(queue->tail == queue->buff)
@@ -270,15 +270,15 @@ bool QUEUE_popBack(QUEUE queue)
  */
 bool QUEUE_create(QUEUE *pqueue, size_t queue_size, size_t element_size)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!pqueue, false, "pqueue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(pqueue, false, "pqueue = null? are you C programmer?");
 
   QUEUE queue = *pqueue;
-  LOG_ASSERT_ERROR_RETURN_RET(queue, false, "queue != null? destory it first.");
-  LOG_ASSERT_ERROR_RETURN_RET(0 == queue_size, false, "queue size = 0? are you kidding me???");
-  LOG_ASSERT_ERROR_RETURN_RET(0 == element_size, false, "element size = 0? are you kidding me???");
+  LOG_ASSERT_ERROR_RETURN_RET(!queue, false, "queue != null? destory it first.");
+  LOG_ASSERT_ERROR_RETURN_RET(queue_size, false, "queue size = 0? are you kidding me???");
+  LOG_ASSERT_ERROR_RETURN_RET(element_size, false, "element size = 0? are you kidding me???");
 
   queue = malloc(sizeof(struct queue) + element_size * queue_size);
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, false, "allocate queue's memory failed!");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, false, "allocate queue's memory failed!");
 
   queue->head = queue->tail = queue->buff;
   queue->size = 0;
@@ -301,7 +301,7 @@ bool QUEUE_create(QUEUE *pqueue, size_t queue_size, size_t element_size)
 bool QUEUE_destroy(QUEUE *pqueue)
 {
   QUEUE queue = *pqueue;
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, false, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, false, "queue = null? are you C programmer?");
 
   free(queue);
 
@@ -321,9 +321,9 @@ bool QUEUE_destroy(QUEUE *pqueue)
  */
 bool QUEUE_traverse(QUEUE queue, void(*func)(void*))
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, false, "queue = null? are you C programmer.");
-  LOG_ASSERT_ERROR_RETURN_RET(!func, false, "func = null? are you C programmer.");
-  LOG_ASSERT_ERROR_RETURN_RET(!queue->size, false, "empty queue.");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, false, "queue = null? are you C programmer.");
+  LOG_ASSERT_ERROR_RETURN_RET(func, false, "func = null? are you C programmer.");
+  LOG_ASSERT_ERROR_RETURN_RET(queue->size, false, "empty queue.");
 
   void *item = queue->head;
   for(size_t size = 0; size < queue->size; ++size)
@@ -350,7 +350,7 @@ bool QUEUE_traverse(QUEUE queue, void(*func)(void*))
  */
 bool QUEUE_clear(QUEUE queue)
 {
-  LOG_ASSERT_ERROR_RETURN_RET(!queue, false, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(queue, false, "queue = null? are you C programmer?");
 
   queue->head = queue->tail = queue->buff;
   queue->size = 0;
