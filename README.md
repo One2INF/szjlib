@@ -91,4 +91,4 @@ bool UTILS_isBigEndian(void);
 ```
 
 # NOTES
-- use C11, complie with -std=c11.
+- use C11, should add complie flag `-std=c11`.
