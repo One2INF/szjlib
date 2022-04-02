@@ -15,6 +15,7 @@ size_t QUEUE_maxSize(QUEUE queue);
 /******* Element access *******/
 void* QUEUE_front(QUEUE queue);
 void* QUEUE_back(QUEUE queue);
+void* QUEUE_at(QUEUE queue, size_t pos);
 
 /******* Modifiers *******/
 bool QUEUE_pushFront(QUEUE queue, void *data);

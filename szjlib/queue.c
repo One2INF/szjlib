@@ -1,5 +1,6 @@
 /* 
  * szjlib/queue.c
+ * Implemented by circular buffer.
  * 
  * Copyright (C) 2022 ZhengJie Shi
  * www.shizhengjie169.wordpress.com
@@ -106,6 +107,24 @@ void* QUEUE_back(QUEUE queue)
   LOG_ASSERT_ERROR_RETURN_RET(!queue, NULL, "queue = null? are you C programmer?");
 
   return queue->tail;
+}
+
+void* QUEUE_at(QUEUE queue, size_t pos)
+{
+  LOG_ASSERT_ERROR_RETURN_RET(!queue, NULL, "queue = null? are you C programmer?");
+  LOG_ASSERT_ERROR_RETURN_RET(pos >= queue->size, NULL, "pos out of queue size.");
+
+  void *item;
+  if((char*)queue->head + pos * queue->element_size > queue->buff + queue->element_size * (queue->max_size - 1))
+  {
+    item = queue->head - queue->element_size * (queue->max_size - pos - 1);
+  }
+  else
+  {
+    item = queue->head + pos * queue->element_size;
+  }
+
+  return item;
 }
 
 /*

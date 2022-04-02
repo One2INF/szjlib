@@ -16,6 +16,7 @@ typedef struct
 
 void print_item(void *data)
 {
+  LOG_ASSERT_ERROR_RETURN_VOID(!data, "item = null.");
   LOG_INFO("%4d %16s", ((DATA_T*)data)->a, ((DATA_T*)data)->str);
 }
 
@@ -31,10 +32,18 @@ int main(void)
   QUEUE_pushBack(queue, &(DATA_T){5, "I am 5"});
   QUEUE_pushBack(queue, &(DATA_T){6, "I am 6"});
 
+  LOG_INFO("queue size: %zd", QUEUE_size(queue));
   LOG_INFO("front item:");
   print_item(QUEUE_front(queue));
   LOG_INFO("back item:");
   print_item(QUEUE_back(queue));
+  LOG_INFO("access item by at:");
+  print_item(QUEUE_at(queue, 0));
+  print_item(QUEUE_at(queue, 1));
+  print_item(QUEUE_at(queue, 2));
+  print_item(QUEUE_at(queue, 3));
+  print_item(QUEUE_at(queue, 4));
+  print_item(QUEUE_at(queue, 5));
 
   LOG_INFO("print the queue:");
   QUEUE_traverse(queue, print_item);
