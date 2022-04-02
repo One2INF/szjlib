@@ -43,7 +43,7 @@ int UTILS_wordLength(void)
 }
 
 /**
-  * @brief  judge the system whether big-endgian or little-endian
+  * @brief  judge the machine whether big-endgian or little-endian
   * @param  None
   * @retval 0: big-endgian
   * @retval 1: little-endian
