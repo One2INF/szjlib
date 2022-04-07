@@ -89,5 +89,9 @@ int UTILS_wordLength(void);
 bool UTILS_isBigEndian(void);
 ```
 
+# TODO
+- 实现模块的单元测试；
+- 实现模块的效能测试；
+- 考虑使用 inline 优化函数，并比较效果。
 # NOTES
 - use C11, should add complie flag `-std=c11`.
