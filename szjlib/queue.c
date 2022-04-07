@@ -109,6 +109,14 @@ void* QUEUE_back(QUEUE queue)
   return queue->tail;
 }
 
+/*
+ * @brief  get queue's item by index.
+ * @param  queue: the queue.
+ * @param  pos: index of item.
+ * @retval point of queue's item.
+ * @author shizj
+ * @date   2022.03.29
+ */
 void* QUEUE_at(QUEUE queue, size_t pos)
 {
   LOG_ASSERT_ERROR_RETURN_RET(queue, NULL, "queue = null? are you C programmer?");
