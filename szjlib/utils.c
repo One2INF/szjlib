@@ -25,6 +25,10 @@ void UTILS_funfunc(void)
   LOG_DEBUG("%s\012\0", &(UNIX)["have"]);
   LOG_DEBUG("%s\012\0", (UNIX)["have"] + "fun" - 0x60);
 
+  /*
+   * 1["have"] （char*）不能作为字符串直接和字符串拼接。
+   * e.g.: "front"1["have"]"tail" 无效。
+   */
   printf(&UNIX["\021%six\012\0"], (UNIX)["have"] + "fun" - 0x60);
  
  #pragma GCC diagnostic pop
