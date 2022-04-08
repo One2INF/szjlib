@@ -12,10 +12,10 @@ typedef enum
 }LOG_LEVEL_EN;
 
 /* log types */
-#define LOG_DEBUG(fmt, ...)      do{LOG(LOG_DEBUG,   "[D] %s(%u)@%s: "fmt"\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);}while(0)
-#define LOG_INFO(fmt, ...)       do{LOG(LOG_INFO,    "[I] %s(%u)@%s: "fmt"\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);}while(0)
-#define LOG_WARNING(fmt, ...)    do{LOG(LOG_WARNING, "[W] %s(%u)@%s: "fmt"\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);}while(0)
-#define LOG_ERROR(fmt, ...)      do{LOG(LOG_ERROR,   "[E] %s(%u)@%s: "fmt"\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);}while(0)
+#define LOG_DEBUG(fmt, ...)      LOG(LOG_DEBUG,   "[D] %s(%u)@%s: "fmt"\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define LOG_INFO(fmt, ...)       LOG(LOG_INFO,    "[I] %s(%u)@%s: "fmt"\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define LOG_WARNING(fmt, ...)    LOG(LOG_WARNING, "[W] %s(%u)@%s: "fmt"\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#define LOG_ERROR(fmt, ...)      LOG(LOG_ERROR,   "[E] %s(%u)@%s: "fmt"\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
 
 /* check condition then print log */
 #define LOG_ASSERT_DEBUG(condition, fmt, ...)      do{if(!(condition))LOG_DEBUG(fmt, ##__VA_ARGS__);}while(0)
